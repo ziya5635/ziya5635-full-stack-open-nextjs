@@ -1,22 +1,37 @@
 import Link from "next/link";
 import { getBlogs } from "../services/blogs";
+import { searchByTitle } from "../actions/blogs";
 
-function Blogs() {
+async function Blogs({
+  searchParams,
+}: {
+  searchParams: Promise<{ title?: string }>;
+}) {
+  const { title } = await searchParams;
   const blogs = getBlogs();
-  const orderedBlogs = blogs.sort((a, b) => b.likes - a.likes);
+  let orderedBlogs = blogs.sort((a, b) => b.likes - a.likes);
+  if (title) {
+    orderedBlogs = orderedBlogs.filter((item) => item.title === title);
+  }
   return (
-    <ul>
-      {orderedBlogs.map((item) => (
-        <li key={item.id}>
-          <Link href={`/blogs/${item.id}`}>
-            <p>title:{item.title}</p>
-          </Link>
-          <p>by:{item.author}</p>
-          <p>url:{item.url}</p>
-          <p>likes:{item.likes}</p>
-        </li>
-      ))}
-    </ul>
+    <>
+      <form action={searchByTitle}>
+        <input type="text" name="title" />
+        <button type="submit">search</button>
+      </form>
+      <ul>
+        {orderedBlogs.map((item) => (
+          <li key={item.id}>
+            <Link href={`/blogs/${item.id}`}>
+              <p>title:{item.title}</p>
+            </Link>
+            <p>by:{item.author}</p>
+            <p>url:{item.url}</p>
+            <p>likes:{item.likes}</p>
+          </li>
+        ))}
+      </ul>
+    </>
   );
 }
 

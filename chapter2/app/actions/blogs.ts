@@ -25,3 +25,7 @@ export async function LikeIt(data: FormData) {
     }
 }
 
+export async function searchByTitle(data: FormData) {
+    const title = data.get('title') as string
+    redirect(`/blogs?title=${title}`)
+}
