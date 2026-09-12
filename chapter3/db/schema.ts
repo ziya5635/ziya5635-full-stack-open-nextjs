@@ -7,3 +7,4 @@ export const blogs = pgTable("blogs", {
     url: text("url").notNull(),
     likes: integer("likes").default(0),
 })
+
