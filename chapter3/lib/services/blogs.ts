@@ -70,8 +70,8 @@ export function getBlogs(title?: string) {
     return db.query.blogs.findMany({ orderBy: desc(blogs.likes) });
 }
 
-export function addBlog(title: string, author: string, url: string) {
-    return db.insert(blogs).values({ title, author, url })
+export function addBlog(title: string, author: string, url: string, userId: number) {
+    return db.insert(blogs).values({ title, author, url, userId })
 }
 
 export function findBlogById(id: number) {

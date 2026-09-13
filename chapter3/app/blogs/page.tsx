@@ -8,10 +8,6 @@ async function Blogs({
 }) {
   let { title } = await searchParams;
   let blogs = await fetchAllBlogs(title);
-  // let orderedBlogs = blogs.sort((a, b) => b.likes - a.likes);
-  // if (title) {
-  //   blogs = blogs.filter((item) => item.title === title);
-  // }
   return (
     <>
       <form action={searchByTitle}>

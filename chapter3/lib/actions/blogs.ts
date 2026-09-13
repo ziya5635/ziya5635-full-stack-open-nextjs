@@ -3,6 +3,8 @@ import { revalidatePath } from "next/cache";
 import { addBlog, findBlogById, getBlogs, likeBlog } from "@/lib/services/blogs";
 import { redirect } from "next/navigation";
 import { ActionError } from "../exceptions";
+import { db } from "@/db";
+import { sql } from "drizzle-orm";
 
 export async function createBlog(data: FormData) {
     const url = data.get('url') as string
@@ -10,7 +12,14 @@ export async function createBlog(data: FormData) {
     const title = data.get('title') as string
 
     try {
-        await addBlog(title, author, url)
+        //creating random user for now
+        let user = await db.query.users.findFirst({
+            orderBy: sql`RANDOM()`,
+        })
+        if (!user) {
+            throw new ActionError('user not found')
+        }
+        await addBlog(title, author, url, user.id)
         revalidatePath('/blogs')
     } catch (error) {
         if (error instanceof ActionError) throw error
