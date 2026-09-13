@@ -1,4 +1,5 @@
-import { getBlogById, LikeIt } from "@/app/actions/blogs";
+import { getBlogById } from "@/lib/actions/blogs";
+import { likeIt } from "@/lib/actions/blogs";
 import { notFound } from "next/navigation";
 
 async function BlogPage({ params }: { params: Promise<{ id: string }> }) {
@@ -15,7 +16,7 @@ async function BlogPage({ params }: { params: Promise<{ id: string }> }) {
       <p>author: {blog.author}</p>
       <p>url: {blog.url}</p>
       <p>likes: {blog.likes}</p>
-      <form action={LikeIt}>
+      <form action={likeIt}>
         <input type="hidden" name="id" value={id} />
         <button type="submit">like it</button>
       </form>
