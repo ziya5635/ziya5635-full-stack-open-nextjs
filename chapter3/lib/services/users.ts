@@ -19,6 +19,6 @@ export function findUserById(id: number) {
 export function findUserByUsername(username: string) {
     return db.query.users.findFirst({
         where: eq(users.username, username),
-        with: { blogs: true },
+        with: { blogs: true }, // this is a join using relations defined in db schema
     })
 }

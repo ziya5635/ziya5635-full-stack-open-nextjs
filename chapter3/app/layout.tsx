@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { Providers } from "./components/providers/providers";
+import Navbar from "./components/navbar";
 
 export default function RootLayout({
   children,
@@ -8,16 +9,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <nav>
-          <Link href="/">home</Link>
-          {" | "}
-          <Link href="/users">users</Link>
-          {" | "}
-          <Link href="/blogs">blogs</Link>
-          {" | "}
-          <Link href="/blogs/new">create new</Link>
-        </nav>
-        {children}
+        <Providers>
+          <Navbar />
+          {children}
+        </Providers>
       </body>
     </html>
   );
