@@ -1,3 +1,4 @@
+"use server";
 import { addUser, findUserById, findUserByUsername, getUsers } from "@/lib/services/users";
 import { ActionError, UsernameTakenError } from "@/lib/exceptions";
 import { revalidatePath } from "next/cache";
@@ -41,23 +42,54 @@ export async function getUserByUsername(username: string) {
     }
 }
 
-export async function registerUser(formData: FormData) {
-    "use server"
+export async function registerUser(
+    prevState: { error?: string; field?: string },
+    formData: FormData
+) {
     const username = (formData.get("username") as string)?.trim();
     const name = (formData.get("name") as string)?.trim();
     const password = formData.get("password") as string;
+
     try {
         await addUser(username, name, password);
+
         revalidatePath("/users");
     } catch (error) {
         if (error instanceof UsernameTakenError) {
-            throw new ActionError("username already taken")
-            // return { error: "username", message: error.message };
+            return {
+                error: "Username already taken",
+                field: "username",
+            };
         }
-        if (error instanceof ActionError) throw error;
-        throw new ActionError(
-            error instanceof Error ? error.message : "Failed to create user"
-        );
+
+        return {
+            error:
+                error instanceof Error
+                    ? error.message
+                    : "Failed to create user",
+        };
     }
+
     redirect("/login");
 }
+
+// export async function registerUser(formData: FormData) {
+//     "use server"
+//     const username = (formData.get("username") as string)?.trim();
+//     const name = (formData.get("name") as string)?.trim();
+//     const password = formData.get("password") as string;
+//     try {
+//         await addUser(username, name, password);
+//         revalidatePath("/users");
+//     } catch (error) {
+//         if (error instanceof UsernameTakenError) {
+//             throw new ActionError("username already taken")
+//             // return { error: "username", message: error.message };
+//         }
+//         if (error instanceof ActionError) throw error;
+//         throw new ActionError(
+//             error instanceof Error ? error.message : "Failed to create user"
+//         );
+//     }
+//     redirect("/login");
+// }
