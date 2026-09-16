@@ -17,7 +17,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                     return null
                 }
 
-                const user = await db.query.users.findFirst({
+                let user = await db.query.users.findFirst({
                     where: eq(users.username, credentials.username as string),
                 })
 

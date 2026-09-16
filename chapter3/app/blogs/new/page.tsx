@@ -1,6 +1,10 @@
+import { auth } from "@/auth";
 import { createBlog } from "@/lib/actions/blogs";
+import { redirect } from "next/navigation";
 
-function NewBlog() {
+async function NewBlog() {
+  let session = await auth();
+  if (!session) redirect("/login");
   return (
     <div>
       <h2>Create a new blog</h2>

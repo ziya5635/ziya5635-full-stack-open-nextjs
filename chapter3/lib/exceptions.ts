@@ -17,3 +17,9 @@ export class UnauthenticatedError extends DomainError {
         super(message);
     }
 }
+
+export class UsernameTakenError extends DomainError {
+    constructor(message = "Username is already taken") {
+        super(message);
+    }
+}
