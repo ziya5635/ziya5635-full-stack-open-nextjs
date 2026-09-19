@@ -5,27 +5,44 @@ import { redirect } from "next/navigation";
 import { ActionError, UnauthenticatedError } from "@/lib/exceptions";
 import { auth } from "@/auth";
 
-export async function createBlog(data: FormData) {
-    const session = await auth();
+export async function createBlog(prevState: { error: string, title: string, author: string, url: string }, data: FormData) {
+    let session = await auth();
     if (!session) redirect("/login");
 
-    const url = data.get("url") as string;
-    const author = data.get("author") as string;
     const title = data.get("title") as string;
+    const author = data.get("author") as string;
+    const url = data.get("url") as string;
+
+    if (!title || title.length < 5) {
+        return { error: "title must be at least 5 characters", title, author, url }
+    }
+
+    if (!author || author.length < 5) {
+        return { error: "author must be at least 5 characters", title, author, url }
+    }
+
+    if (!url || url.length < 5) {
+        return { error: "url must be at least 5 characters", title, author, url }
+    }
 
     try {
         await addBlog(title, author, url);
         revalidatePath("/blogs");
     } catch (error) {
         if (error instanceof UnauthenticatedError) {
-            redirect("/login");
+            return { error: "user must be logged in", title, author, url }
+            // redirect("/login");
         }
 
-        if (error instanceof ActionError) throw error;
-
-        throw new ActionError(
-            error instanceof Error ? error.message : "Failed to create blogs"
-        );
+        // if (error instanceof ActionError) throw error;
+        if (error instanceof ActionError) {
+            return { error: error.message, title, author, url }
+        }
+        console.error('Unable to create blogs:', error)
+        return { error: 'Unable to create the blog', title, author, url }
+        // throw new ActionError(
+        //     error instanceof Error ? error.message : "Failed to create blogs"
+        // );
     }
 
     redirect("/blogs");

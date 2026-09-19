@@ -61,12 +61,10 @@ export async function registerUser(
                 field: "username",
             };
         }
+        console.error("registerUser failed", error);
 
         return {
-            error:
-                error instanceof Error
-                    ? error.message
-                    : "Failed to create user",
+            error: "Failed to create user",
         };
     }
 
