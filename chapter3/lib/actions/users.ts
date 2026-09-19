@@ -72,24 +72,3 @@ export async function registerUser(
 
     redirect("/login");
 }
-
-// export async function registerUser(formData: FormData) {
-//     "use server"
-//     const username = (formData.get("username") as string)?.trim();
-//     const name = (formData.get("name") as string)?.trim();
-//     const password = formData.get("password") as string;
-//     try {
-//         await addUser(username, name, password);
-//         revalidatePath("/users");
-//     } catch (error) {
-//         if (error instanceof UsernameTakenError) {
-//             throw new ActionError("username already taken")
-//             // return { error: "username", message: error.message };
-//         }
-//         if (error instanceof ActionError) throw error;
-//         throw new ActionError(
-//             error instanceof Error ? error.message : "Failed to create user"
-//         );
-//     }
-//     redirect("/login");
-// }
