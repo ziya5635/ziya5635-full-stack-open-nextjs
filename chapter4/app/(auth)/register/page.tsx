@@ -5,7 +5,10 @@ import { registerUser } from "@/lib/actions/users";
 
 const initialState = {
   error: "",
-  field: "",
+  username: "",
+  name: "",
+  password: "",
+  passwordConfirm: "",
 };
 
 export default function RegisterPage() {
@@ -23,28 +26,42 @@ export default function RegisterPage() {
               type="text"
               name="username"
               required
-              aria-invalid={state.field === "username"}
+              defaultValue={state.username}
             />
           </label>
-
-          {state.field === "username" && <p>{state.error}</p>}
         </div>
 
         <div>
           <label>
             Name
-            <input type="text" name="name" required />
+            <input type="text" name="name" required defaultValue={state.name} />
           </label>
         </div>
 
         <div>
           <label>
             Password
-            <input type="password" name="password" required />
+            <input
+              type="password"
+              name="password"
+              required
+              defaultValue={state.password}
+            />
+          </label>
+        </div>
+        <div>
+          <label>
+            Confirm Password
+            <input
+              type="password"
+              name="passwordConfirm"
+              required
+              defaultValue={state.passwordConfirm}
+            />
           </label>
         </div>
 
-        {state.error && !state.field && <p>{state.error}</p>}
+        {state.error && <p style={{ color: "red" }}>{state.error}</p>}
 
         <button type="submit" disabled={pending}>
           {pending ? "Registering..." : "Register"}

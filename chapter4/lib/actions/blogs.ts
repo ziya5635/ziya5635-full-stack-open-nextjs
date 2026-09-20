@@ -14,15 +14,15 @@ export async function createBlog(prevState: { error: string, title: string, auth
     const url = data.get("url") as string;
 
     if (!title || title.length < 5) {
-        return { error: "title must be at least 5 characters", title, author, url }
+        return { error: "title must be at least 5 characters long", title, author, url }
     }
 
     if (!author || author.length < 5) {
-        return { error: "author must be at least 5 characters", title, author, url }
+        return { error: "author must be at least 5 characters long", title, author, url }
     }
 
     if (!url || url.length < 5) {
-        return { error: "url must be at least 5 characters", title, author, url }
+        return { error: "url must be at least 5 characters long", title, author, url }
     }
 
     try {
