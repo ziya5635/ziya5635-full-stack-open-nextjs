@@ -7,9 +7,11 @@ import { useState } from "react";
 export default function LoginPage() {
   let router = useRouter();
   let [error, setError] = useState("");
+  let [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
+    setIsSubmitting(true);
     let formData = new FormData(e.currentTarget);
 
     let result = await signIn("credentials", {
@@ -17,9 +19,9 @@ export default function LoginPage() {
       password: formData.get("password"),
       redirect: false,
     });
-
     if (result?.error) {
       setError("Invalid username or password");
+      setIsSubmitting(false);
     } else {
       router.push("/");
       //to force the Server Components in the tree to re-render with the new session
@@ -44,7 +46,9 @@ export default function LoginPage() {
             <input type="password" name="password" required />
           </label>
         </div>
-        <button type="submit">Login</button>
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Logging in..." : "Login"}
+        </button>
       </form>
     </div>
   );

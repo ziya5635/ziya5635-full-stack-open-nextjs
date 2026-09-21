@@ -4,8 +4,10 @@ import { notFound } from "next/navigation";
 
 async function UserPage({ params }: { params: Promise<{ username: string }> }) {
   let { username } = await params;
-  let user = await getUserByUsername(username);
-
+  let { user, success, error } = await getUserByUsername(username);
+  if (!success) {
+    return <p>{error}</p>;
+  }
   if (!user) {
     notFound();
   }

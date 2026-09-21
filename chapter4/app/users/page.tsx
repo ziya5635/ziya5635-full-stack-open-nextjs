@@ -2,8 +2,13 @@ import { fetchAllUsers } from "@/lib/actions/users";
 import Link from "next/link";
 
 async function Users() {
-  let users = await fetchAllUsers();
-
+  let { users, success, error } = await fetchAllUsers();
+  if (!success) {
+    return <p>{error}</p>;
+  }
+  if (!users || users.length === 0) {
+    return <p>No users found</p>;
+  }
   return (
     <div>
       <h2>Users</h2>

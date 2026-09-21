@@ -6,39 +6,45 @@ import { redirect } from "next/navigation";
 
 export async function fetchAllUsers(username?: string) {
     try {
-        return await getUsers(username);
+        let users = await getUsers(username);
+        return { users, success: true, error: "" };
     } catch (error) {
-        console.log(error)
-        if (error instanceof ActionError) throw error
-        throw new ActionError(
-            error instanceof Error ? error.message : "Failed to fetch blogs"
-        )
+        console.error(error)
+        if (error instanceof ActionError) {
+            return { users: [], success: false, error: error.message };
+        }
+        return { users: [], success: false, error: "Failed to fetch users" };
     }
+
 }
 
 export async function getUserById(id: number) {
     try {
         let user = await findUserById(id)
-        if (!user) throw new ActionError("User not found")
-        return user
+        if (!user) {
+            return { user: null, success: false, error: "User not found" }
+        }
+        return { user, success: true, error: "" }
     } catch (error) {
-        if (error instanceof ActionError) throw error
-        throw new ActionError(
-            error instanceof Error ? error.message : "Failed to fetch the user"
-        )
+        if (error instanceof ActionError) {
+            return { user: null, success: false, error: error.message };
+        }
+        return { user: null, success: false, error: "Failed to fetch the user" };
     }
 }
 
 export async function getUserByUsername(username: string) {
     try {
         let user = await findUserByUsername(username)
-        if (!user) throw new ActionError("User not found")
-        return user
+        if (!user) {
+            return { user: null, success: false, error: "User not found" };
+        }
+        return { user, success: true, error: "" };
     } catch (error) {
-        if (error instanceof ActionError) throw error
-        throw new ActionError(
-            error instanceof Error ? error.message : "Failed to fetch the user"
-        )
+        if (error instanceof ActionError) {
+            return { user: null, success: false, error: error.message };
+        }
+        return { user: null, success: false, error: "Failed to fetch the user" };
     }
 }
 

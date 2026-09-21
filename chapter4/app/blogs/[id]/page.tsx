@@ -1,11 +1,13 @@
 import { getBlogById } from "@/lib/actions/blogs";
-import { likeIt } from "@/lib/actions/blogs";
 import { notFound } from "next/navigation";
+import { LikeItForm } from "./likeForm";
 
 async function BlogPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const blog = await getBlogById(+id);
-
+  let { id } = await params;
+  let { blog, success, error } = await getBlogById(+id);
+  if (!success) {
+    return <p>{error}</p>;
+  }
   if (!blog) {
     notFound();
   }
@@ -16,10 +18,7 @@ async function BlogPage({ params }: { params: Promise<{ id: string }> }) {
       <p>author: {blog.author}</p>
       <p>url: {blog.url}</p>
       <p>likes: {blog.likes}</p>
-      <form action={likeIt}>
-        <input type="hidden" name="id" value={id} />
-        <button type="submit">like it</button>
-      </form>
+      <LikeItForm id={id} />
     </div>
   );
 }

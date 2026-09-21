@@ -1,14 +1,38 @@
 "use client";
+import { useNotification } from "@/app/components/providers/notificationProvider";
 import { createBlog } from "@/lib/actions/blogs";
 import { useSession } from "next-auth/react";
-import { redirect } from "next/navigation";
-import { useActionState } from "react";
+import { useRouter } from "next/navigation";
+import { useActionState, useEffect } from "react";
 
-let initialState = { error: "", title: "", author: "", url: "" };
+let initialState = {
+  success: false,
+  error: "",
+  title: "",
+  author: "",
+  url: "",
+};
+
 function NewBlog() {
-  let { data: session } = useSession();
+  let { status } = useSession();
   let [state, formAction, pending] = useActionState(createBlog, initialState);
-  if (!session) redirect("/login");
+  let { showNotification } = useNotification();
+  let router = useRouter();
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.replace("/login");
+    }
+  }, [status, router]);
+
+  useEffect(() => {
+    if (state.success) {
+      showNotification("Blog created successfully");
+      router.push("/blogs");
+    }
+  }, [state, showNotification, router]);
+
+  if (status === "loading") return null;
 
   return (
     <div>
@@ -21,7 +45,7 @@ function NewBlog() {
               type="text"
               name="title"
               required
-              defaultValue={state.title}
+              defaultValue={state.title || ""}
             />
           </label>
         </div>
@@ -32,14 +56,19 @@ function NewBlog() {
               type="text"
               name="author"
               required
-              defaultValue={state.author}
+              defaultValue={state.author || ""}
             />
           </label>
         </div>
         <div>
           <label>
             Url
-            <input type="text" name="url" required defaultValue={state.url} />
+            <input
+              type="text"
+              name="url"
+              required
+              defaultValue={state.url || ""}
+            />
           </label>
         </div>
         {state.error && <p style={{ color: "red" }}>{state.error}</p>}
