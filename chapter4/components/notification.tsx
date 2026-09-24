@@ -3,7 +3,7 @@
 import { useNotification } from "./providers/notificationProvider";
 
 export default function Notification() {
-  const { message, type } = useNotification();
+  let { message, type } = useNotification();
 
   if (!message) return null;
 
