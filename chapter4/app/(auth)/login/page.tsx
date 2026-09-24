@@ -1,18 +1,20 @@
 "use client";
 
 import Button from "@/components/button";
+import { useNotification } from "@/components/providers/notificationProvider";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function LoginPage() {
   let router = useRouter();
-  let [error, setError] = useState("");
+  // let [error, setError] = useState("");
   let [isSubmitting, setIsSubmitting] = useState(false);
+  let { showNotification } = useNotification();
 
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
-    setError("");
+    // setError("");
     setIsSubmitting(true);
     let formData = new FormData(e.currentTarget);
 
@@ -23,7 +25,8 @@ export default function LoginPage() {
     });
 
     if (result?.error) {
-      setError("Invalid username or password");
+      // setError("Invalid username or password");
+      showNotification("Invalid username or password", "error");
       setIsSubmitting(false);
     } else {
       router.push("/");
@@ -55,7 +58,7 @@ export default function LoginPage() {
                 name="username"
                 required
                 disabled={isSubmitting}
-                placeholder="johndoe"
+                placeholder="johnDoe"
                 className={inputClasses}
               />
             </label>
@@ -75,11 +78,11 @@ export default function LoginPage() {
             </label>
           </div>
 
-          {error && (
+          {/* {error && (
             <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">
               {error}
             </div>
-          )}
+          )} */}
 
           <Button type="submit" disabled={isSubmitting} className="w-full">
             {isSubmitting ? "Logging in..." : "Login"}

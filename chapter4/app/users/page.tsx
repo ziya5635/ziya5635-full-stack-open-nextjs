@@ -2,7 +2,7 @@ import { fetchAllUsers } from "@/lib/actions/users";
 import Link from "next/link";
 
 async function Users() {
-  const { users, success, error } = await fetchAllUsers();
+  let { users, success, error } = await fetchAllUsers();
 
   if (!success) {
     return (

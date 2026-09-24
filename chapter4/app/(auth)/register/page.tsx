@@ -5,6 +5,7 @@ import { registerUser } from "@/lib/actions/users";
 import Button from "@/components/button";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { useNotification } from "@/components/providers/notificationProvider";
 
 let initialState = {
   error: "",
@@ -18,12 +19,19 @@ export default function RegisterPage() {
   let { status } = useSession();
   let router = useRouter();
   let [state, formAction, pending] = useActionState(registerUser, initialState);
+  let { showNotification } = useNotification();
 
   useEffect(() => {
     if (status === "authenticated") {
       router.replace("/blogs/new");
     }
   }, [status, router]);
+
+  useEffect(() => {
+    if (state.error) {
+      showNotification(state.error, "error");
+    }
+  }, [state, showNotification, router]);
 
   const inputClasses =
     "w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-400 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 disabled:cursor-not-allowed disabled:opacity-60";
@@ -49,7 +57,7 @@ export default function RegisterPage() {
                 required
                 defaultValue={state.username}
                 disabled={pending}
-                placeholder="johndoe"
+                placeholder="johnDoe"
                 className={inputClasses}
               />
             </label>
@@ -100,11 +108,11 @@ export default function RegisterPage() {
             </label>
           </div>
 
-          {state.error && (
+          {/* {state.error && (
             <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">
               {state.error}
             </div>
-          )}
+          )} */}
 
           <Button type="submit" disabled={pending} className="w-full">
             {pending ? "Registering..." : "Register"}

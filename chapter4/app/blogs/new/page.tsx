@@ -32,7 +32,7 @@ function NewBlog() {
       showNotification("Blog created successfully");
       router.push("/blogs");
     } else {
-      showNotification(state.error);
+      showNotification(state.error, "error");
     }
   }, [state, showNotification, router]);
 
