@@ -1,5 +1,5 @@
 "use client";
-import { useNotification } from "@/app/components/providers/notificationProvider";
+import { useNotification } from "@/components/providers/notificationProvider";
 import { createBlog } from "@/lib/actions/blogs";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";

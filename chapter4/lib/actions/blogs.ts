@@ -31,7 +31,6 @@ export async function createBlog(prevState: { error?: string, success?: boolean,
     } catch (error) {
         if (error instanceof UnauthenticatedError) {
             return { success: false, error: "user must be logged in", title, author, url }
-            // redirect("/login");
         }
 
         if (error instanceof ActionError) {
@@ -41,7 +40,6 @@ export async function createBlog(prevState: { error?: string, success?: boolean,
         return { success: false, error: 'Unable to create the blog', title, author, url }
     }
     return { success: true, error: "", title: "", author: "", url: "" }
-    // redirect("/blogs");
 }
 
 export async function fetchAllBlogs(title?: string) {

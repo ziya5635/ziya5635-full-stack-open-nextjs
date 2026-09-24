@@ -1,5 +1,6 @@
 "use client";
 
+import Button from "@/components/button";
 import { likeIt } from "@/lib/actions/blogs";
 import { useActionState } from "react";
 
@@ -12,9 +13,9 @@ export function LikeItForm({ id }: { id: string }) {
   return (
     <form action={formAction}>
       <input type="hidden" name="id" value={id} />
-      <button type="submit" disabled={pending}>
+      <Button type="submit" disabled={pending}>
         like it
-      </button>
+      </Button>
       {state.error && <p style={{ color: "red" }}>{state.error}</p>}
     </form>
   );
