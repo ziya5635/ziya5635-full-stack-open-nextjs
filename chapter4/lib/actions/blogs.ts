@@ -46,7 +46,7 @@ export async function fetchAllBlogs(title?: string) {
     try {
         return { blogs: await getBlogs(title), success: true, error: "" };
     } catch (error) {
-        console.log('Failed to fetch blogs:', error)
+        console.error('Failed to fetch blogs:', error)
         if (error instanceof ActionError) {
             return { blogs: [], success: false, error: error.message };
         }

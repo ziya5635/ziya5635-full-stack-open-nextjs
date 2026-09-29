@@ -7,8 +7,8 @@ async function Blogs({
 }: {
   searchParams: Promise<{ title?: string }>;
 }) {
-  const { title } = await searchParams;
-  const { blogs, success, error } = await fetchAllBlogs(title);
+  let { title } = await searchParams;
+  let { blogs, success, error } = await fetchAllBlogs(title);
 
   if (!success) {
     return (

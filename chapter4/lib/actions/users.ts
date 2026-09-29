@@ -1,18 +1,19 @@
 "use server";
-import { addUser, findUserById, findUserByUsername, getUsers } from "@/lib/services/users";
+import { addUser, findUserById, findUserByUsername, getUsers, updateUser } from "@/lib/services/users";
 import { ActionError, UsernameTakenError } from "@/lib/exceptions";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/services/session";
 
 export async function fetchAllUsers(username?: string) {
     try {
         let users = await getUsers(username);
         return { users, success: true, error: "" };
     } catch (error) {
-        console.error(error)
         if (error instanceof ActionError) {
             return { users: [], success: false, error: error.message };
         }
+        console.error('Failed to fetch users:', error)
         return { users: [], success: false, error: "Failed to fetch users" };
     }
 
@@ -29,6 +30,7 @@ export async function getUserById(id: number) {
         if (error instanceof ActionError) {
             return { user: null, success: false, error: error.message };
         }
+        console.error(error)
         return { user: null, success: false, error: "Failed to fetch the user" };
     }
 }
@@ -44,6 +46,7 @@ export async function getUserByUsername(username: string) {
         if (error instanceof ActionError) {
             return { user: null, success: false, error: error.message };
         }
+        console.error(error)
         return { user: null, success: false, error: "Failed to fetch the user" };
     }
 }
@@ -120,4 +123,50 @@ export async function registerUser(
     }
 
     redirect("/login");
+}
+
+export async function getCurrentUserAction() {
+    try {
+        let user = await getCurrentUser()
+        if (!user) {
+            return { user: null, success: false, error: "User not found" }
+        }
+        return { user, success: true, error: "" }
+    } catch (error) {
+        if (error instanceof ActionError) {
+            return { user: null, success: false, error: error.message };
+        }
+        console.error(error)
+        return { user: null, success: false, error: "Failed to fetch the user profile info" };
+    }
+}
+
+export async function generateUserToken(
+    prevState: { error?: string, token?: string },
+    formData: FormData
+): Promise<{ error?: string, token?: string }> {
+    let user = await getCurrentUser();
+    if (!user) {
+        return { error: "User not found" };
+    }
+
+    try {
+        let updatedUser = await updateUser(user.id, {
+            token: crypto.randomUUID(),
+        });
+
+        if (!updatedUser?.token) {
+            return { error: "Failed to update user with the new token" };
+        }
+        revalidatePath('/users');
+        return { token: updatedUser.token };
+    } catch (error) {
+        if (error instanceof UsernameTakenError) {
+            return {
+                error: error.message,
+            }
+        }
+        console.error("generateUserToken failed:", error);
+        return { error: "Failed to generate token" };
+    }
 }

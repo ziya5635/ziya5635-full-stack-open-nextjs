@@ -14,7 +14,8 @@ function Navbar() {
       <div className="ml-auto flex items-center gap-4">
         {session ? (
           <>
-            <em className="text-gray-300">{session.user?.name} logged in</em>
+            <NavLink href="/me">me</NavLink>
+            {/* <em className="text-gray-300">{session.user?.name}</em> */}
             <Button action={signOut}>logout</Button>
           </>
         ) : (

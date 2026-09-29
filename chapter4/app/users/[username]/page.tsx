@@ -3,8 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 async function UserPage({ params }: { params: Promise<{ username: string }> }) {
-  const { username } = await params;
-  const { user, success, error } = await getUserByUsername(username);
+  let { username } = await params;
+  let { user, success, error } = await getUserByUsername(username);
 
   if (!success) {
     return (

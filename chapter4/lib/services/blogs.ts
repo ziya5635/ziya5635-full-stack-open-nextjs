@@ -6,7 +6,10 @@ import { UnauthenticatedError } from "@/lib/exceptions";
 
 export function getBlogs(title?: string) {
     if (title) {
-        return db.query.blogs.findMany({ where: ilike(blogs.title, `%${title}%`), orderBy: desc(blogs.likes) });
+        //SQL query builder theme
+        return db.select().from(blogs).where(ilike(blogs.title, `%${title}%`)).orderBy(desc(blogs.likes))
+        //Relational query API theme
+        // return db.query.blogs.findMany({ where: ilike(blogs.title, `%${title}%`), orderBy: desc(blogs.likes) });
     }
     return db.query.blogs.findMany({ orderBy: desc(blogs.likes) });
 }
