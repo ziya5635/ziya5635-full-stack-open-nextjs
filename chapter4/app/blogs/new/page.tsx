@@ -21,11 +21,12 @@ function NewBlog() {
   let { showNotification } = useNotification();
   let router = useRouter();
 
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.replace("/login");
-    }
-  }, [status, router]);
+  //redirecting is managed by proxy.ts, so no need for this effect any longer
+  // useEffect(() => {
+  //   if (status === "unauthenticated") {
+  //     router.replace("/login");
+  //   }
+  // }, [status, router]);
 
   useEffect(() => {
     if (state.success) {

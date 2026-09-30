@@ -131,7 +131,8 @@ export async function getCurrentUserAction() {
         if (!user) {
             return { user: null, success: false, error: "User not found" }
         }
-        return { user, success: true, error: "" }
+        let { passwordHash, ...safeUser } = user
+        return { user: safeUser, success: true, error: "" }
     } catch (error) {
         if (error instanceof ActionError) {
             return { user: null, success: false, error: error.message };
@@ -158,6 +159,7 @@ export async function generateUserToken(
         if (!updatedUser?.token) {
             return { error: "Failed to update user with the new token" };
         }
+        //revalidating users route since it is a STATIC (cached) route.
         revalidatePath('/users');
         return { token: updatedUser.token };
     } catch (error) {

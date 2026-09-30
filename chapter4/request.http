@@ -1,0 +1,7 @@
+@host = http://localhost:3000
+@token = 7168c682-32d2-4fed-91a4-9e718be44998
+
+### Get current user
+GET {{host}}/api/me
+Content-Type: application/json
+Authorization: Bearer {{token}}

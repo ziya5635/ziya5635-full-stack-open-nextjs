@@ -2,7 +2,8 @@ import { db } from "@/db";
 import { users } from "@/db/schema";
 import bcrypt from "bcryptjs";
 import { desc, eq, ilike } from "drizzle-orm";
-import { UsernameTakenError } from "@/lib/exceptions";
+import { UnauthenticatedError, UsernameTakenError } from "@/lib/exceptions";
+import { getCurrentUser } from "./session";
 
 export function getUsers(username?: string) {
     if (username) {
@@ -53,6 +54,11 @@ export async function updateUser(
     userId: number,
     userData: { name?: string; token?: string, username?: string }
 ) {
+    let user = await getCurrentUser()
+    if (!user) {
+        throw new UnauthenticatedError("Not logged in");
+    }
+
     if (!userData.name && !userData.token && !userData.username) {
         return;
     }

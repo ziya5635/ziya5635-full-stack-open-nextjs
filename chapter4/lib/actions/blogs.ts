@@ -3,11 +3,11 @@ import { revalidatePath } from "next/cache";
 import { addBlog, findBlogById, getBlogs, likeBlog } from "@/lib/services/blogs";
 import { redirect } from "next/navigation";
 import { ActionError, UnauthenticatedError } from "@/lib/exceptions";
-import { auth } from "@/auth";
+import { getCurrentUser } from "@/lib/services/session";
 
 export async function createBlog(prevState: { error?: string, success?: boolean, title?: string, author?: string, url?: string }, data: FormData) {
-    let session = await auth();
-    if (!session) redirect("/login");
+    let user = await getCurrentUser();
+    if (!user) redirect("/login");
 
     const title = data.get("title") as string;
     const author = data.get("author") as string;
