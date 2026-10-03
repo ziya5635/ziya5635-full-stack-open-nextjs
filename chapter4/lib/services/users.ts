@@ -1,14 +1,26 @@
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import bcrypt from "bcryptjs";
-import { desc, eq, ilike } from "drizzle-orm";
+import { desc, eq, ilike, sql } from "drizzle-orm";
 import { UnauthenticatedError, UsernameTakenError } from "@/lib/exceptions";
 import { getCurrentUser } from "./session";
+
+let publicUserColumns = {
+    id: users.id,
+    username: users.username,
+    name: users.name,
+} as const;
+
+let publicUserColumnsFlags = { id: true, username: true, name: true } as const;
 
 export function getUsers(username?: string) {
     if (username) {
         //SQL query builder theme
-        return db.select().from(users).where(ilike(users.username, `%${username}%`)).orderBy(desc(users.username));
+        return db.select({
+            id: users.id,
+            username: users.username,
+            name: users.name,
+        }).from(users).where(ilike(users.username, `%${username}%`)).orderBy(desc(users.username));
         // return db.query.users.findMany({ where: ilike(users.username, `%${username}%`), orderBy: desc(users.username) });
     }
     return db.select().from(users);
@@ -17,13 +29,26 @@ export function getUsers(username?: string) {
 
 export function findUserById(id: number) {
     return db.query.users.findFirst({
+        columns: publicUserColumnsFlags,
         where: eq(users.id, id),
         with: { blogs: true },
     })
 }
 
+export function getUserByToken(tokenHash: string) {
+    return db.query.users.findFirst({
+        columns: publicUserColumnsFlags,
+        where: eq(users.token, tokenHash),
+        with: { blogs: true }
+    })
+}
+
+const hasTokenSql = sql<boolean>`(${users.token} is not null)`.as("has_token");
+
 export function findUserByUsername(username: string) {
     return db.query.users.findFirst({
+        columns: publicUserColumnsFlags,
+        extras: { hasToken: hasTokenSql }, //this is computed
         where: eq(users.username, username),
         with: { blogs: true }, // this is a join using relations defined in db schema
     })
@@ -41,7 +66,9 @@ function isUniqueViolation(error: unknown): boolean {
 export async function addUser(username: string, name: string, password: string) {
     const passwordHash = await bcrypt.hash(password, 10);
     try {
-        return await db.insert(users).values({ username, name, passwordHash });
+        let [created] = await db.insert(users).values({ username, name, passwordHash })
+            .returning(publicUserColumns);
+        return created
     } catch (error) {
         if (isUniqueViolation(error)) {
             throw new UsernameTakenError();
@@ -73,7 +100,7 @@ export async function updateUser(
             .update(users)
             .set(values)
             .where(eq(users.id, userId))
-            .returning();
+            .returning(publicUserColumns);
 
         return updated;
     } catch (error) {

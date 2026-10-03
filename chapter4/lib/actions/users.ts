@@ -4,6 +4,8 @@ import { ActionError, UsernameTakenError } from "@/lib/exceptions";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/services/session";
+import { randomBytes } from "crypto";
+import { hashToken } from "@/lib/token";
 
 export async function fetchAllUsers(username?: string) {
     try {
@@ -16,7 +18,6 @@ export async function fetchAllUsers(username?: string) {
         console.error('Failed to fetch users:', error)
         return { users: [], success: false, error: "Failed to fetch users" };
     }
-
 }
 
 export async function getUserById(id: number) {
@@ -131,8 +132,7 @@ export async function getCurrentUserAction() {
         if (!user) {
             return { user: null, success: false, error: "User not found" }
         }
-        let { passwordHash, ...safeUser } = user
-        return { user: safeUser, success: true, error: "" }
+        return { user, success: true, error: "" }
     } catch (error) {
         if (error instanceof ActionError) {
             return { user: null, success: false, error: error.message };
@@ -143,31 +143,35 @@ export async function getCurrentUserAction() {
 }
 
 export async function generateUserToken(
-    prevState: { error?: string, token?: string },
+    prevState: { error?: string; token?: string },
     formData: FormData
-): Promise<{ error?: string, token?: string }> {
+): Promise<{ error?: string; token?: string }> {
     let user = await getCurrentUser();
     if (!user) {
         return { error: "User not found" };
     }
 
     try {
+        const rawToken = randomBytes(32).toString("base64url");
+        const tokenHash = hashToken(rawToken);
+
         let updatedUser = await updateUser(user.id, {
-            token: crypto.randomUUID(),
+            token: tokenHash,
         });
 
-        if (!updatedUser?.token) {
+        //continue by only showing raw token not the hashed one to user
+        if (!updatedUser) {
             return { error: "Failed to update user with the new token" };
         }
-        //revalidating users route since it is a STATIC (cached) route.
-        revalidatePath('/users');
-        return { token: updatedUser.token };
+
+        revalidatePath("/users");
+
+        return { token: rawToken };
     } catch (error) {
         if (error instanceof UsernameTakenError) {
-            return {
-                error: error.message,
-            }
+            return { error: error.message };
         }
+
         console.error("generateUserToken failed:", error);
         return { error: "Failed to generate token" };
     }

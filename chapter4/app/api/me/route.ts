@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { getUserFromApiToken } from "@/lib/services/api-auth";
 import { rateLimit } from "@/lib/rate-limit";
 
-
 export async function GET(req: NextRequest) {
     try {
         // 1. Rate limit by IP first (before any DB work)
@@ -48,8 +47,7 @@ export async function GET(req: NextRequest) {
             );
         }
 
-        let { token, passwordHash, ...safe } = user;
-        return NextResponse.json(safe, { headers: { "Cache-Control": "no-store" } });
+        return NextResponse.json(user, { headers: { "Cache-Control": "no-store" } });
     } catch (error) {
         console.error(error);
         return NextResponse.json(

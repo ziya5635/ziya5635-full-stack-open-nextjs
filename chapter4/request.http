@@ -1,7 +1,9 @@
 @host = http://localhost:3000
-@token = 7168c682-32d2-4fed-91a4-9e718be44998
+@token = PiBuBjxsZw6m3Y_q2w08r4CswRu-9m4rVNJRU0t5P20
 
 ### Get current user
 GET {{host}}/api/me
 Content-Type: application/json
 Authorization: Bearer {{token}}
+
+###curl -X GET http://localhost:3000/api/me -H "Content-Type: application/json" -H "Authorization: Bearer g2RRPihDWgUGC06DrecUPoTFNZC7ZOFAB6coQTzQb2A"

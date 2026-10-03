@@ -86,29 +86,7 @@ async function MePage() {
 
         {/* Token card */}
         <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-          <div className="mb-4 flex items-start justify-between gap-4">
-            <div>
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-500">
-                API token
-              </h3>
-              <p className="mt-1 text-sm text-gray-500">
-                Use this token to authenticate API requests.
-              </p>
-            </div>
-            <GenerateTokenForm />
-          </div>
-
-          {user.token ? (
-            <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
-              <code className="block break-all font-mono text-xs text-gray-700">
-                {user.token}
-              </code>
-            </div>
-          ) : (
-            <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 px-4 py-6 text-center">
-              <p className="text-sm text-gray-500">No token generated yet.</p>
-            </div>
-          )}
+          <GenerateTokenForm hasToken={user.hasToken} />
         </div>
       </div>
     </div>
