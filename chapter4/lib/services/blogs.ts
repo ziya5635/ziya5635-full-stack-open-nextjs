@@ -3,6 +3,7 @@ import { blogs } from "@/db/schema";
 import { desc, eq, ilike, sql } from "drizzle-orm";
 import { getCurrentUser } from "./session";
 import { UnauthenticatedError } from "@/lib/exceptions";
+import { addToReadingList } from "./readingLists";
 
 export function getBlogs(title?: string) {
     if (title) {
@@ -19,7 +20,14 @@ export async function addBlog(title: string, author: string, url: string) {
     if (!user) {
         throw new UnauthenticatedError("Not logged in");
     }
-    return db.insert(blogs).values({ title, author, url, userId: user.id })
+    let [newBlog] = await db
+        .insert(blogs)
+        .values({ title, author, url, userId: user.id })
+        .returning()
+
+    await addToReadingList(newBlog.id);
+    return newBlog;
+    // return db.insert(blogs).values({ title, author, url, userId: user.id })
 }
 
 export function findBlogById(id: number) {

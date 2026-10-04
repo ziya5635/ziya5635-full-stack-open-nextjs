@@ -36,6 +36,20 @@
       "when": 1790408555397,
       "tag": "0004_gorgeous_dragon_lord",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791021698130,
+      "tag": "0005_right_rockslide",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791022345346,
+      "tag": "0006_omniscient_quentin_quire",
+      "breakpoints": true
     }
   ]
 }

@@ -2,15 +2,14 @@
 
 import Button from "@/components/button";
 import { useNotification } from "@/components/providers/notificationProvider";
-import { likeIt } from "@/lib/actions/blogs";
+import { addToReadingListAction } from "@/lib/actions/readingLists";
 import { useActionState, useEffect } from "react";
 
-export function LikeItForm({ id }: { id: string }) {
-  let [state, formAction, pending] = useActionState(likeIt, {
+export function AddToReadingListForm({ id }: { id: string }) {
+  let [state, formAction, pending] = useActionState(addToReadingListAction, {
     success: false,
     error: "",
   });
-
   let { showNotification } = useNotification();
 
   useEffect(() => {
@@ -23,7 +22,7 @@ export function LikeItForm({ id }: { id: string }) {
     <form action={formAction}>
       <input type="hidden" name="id" value={id} />
       <Button type="submit" disabled={pending}>
-        like it
+        Add to reading list
       </Button>
     </form>
   );

@@ -48,7 +48,7 @@ const hasTokenSql = sql<boolean>`(${users.token} is not null)`.as("has_token");
 export function findUserByUsername(username: string) {
     return db.query.users.findFirst({
         columns: publicUserColumnsFlags,
-        extras: { hasToken: hasTokenSql }, //this is computed
+        extras: { hasToken: hasTokenSql }, //this is computed and named has_token
         where: eq(users.username, username),
         with: { blogs: true }, // this is a join using relations defined in db schema
     })
