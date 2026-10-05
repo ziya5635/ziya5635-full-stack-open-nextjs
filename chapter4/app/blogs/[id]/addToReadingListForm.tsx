@@ -13,6 +13,9 @@ export function AddToReadingListForm({ id }: { id: string }) {
   let { showNotification } = useNotification();
 
   useEffect(() => {
+    if (state.success) {
+      showNotification("item added to the list");
+    }
     if (state.error) {
       showNotification(state.error, "error");
     }

@@ -1,8 +1,8 @@
 import { db } from "@/db";
 import { blogs } from "@/db/schema";
-import { desc, eq, ilike, sql } from "drizzle-orm";
+import { and, desc, eq, ilike, sql } from "drizzle-orm";
 import { getCurrentUser } from "./session";
-import { UnauthenticatedError } from "@/lib/exceptions";
+import { NotFoundError, UnauthenticatedError } from "@/lib/exceptions";
 import { addToReadingList } from "./readingLists";
 
 export function getBlogs(title?: string) {
@@ -37,14 +37,28 @@ export function findBlogById(id: number) {
 }
 
 export async function likeBlog(id: number) {
-    let blog = await findBlogById(id)
-    if (!blog) return null
-
     let [updated] = await db
         .update(blogs)
         .set({ likes: sql`${blogs.likes} + 1` })
         .where(eq(blogs.id, id))
         .returning()
 
-    return updated
+    if (!updated) {
+        throw new NotFoundError("Blog is not in your reading list");
+    }
+    return updated;
+}
+
+export async function isOwnedByUser(blogId: number) {
+    let user = await getCurrentUser()
+    if (!user) {
+        throw new UnauthenticatedError("Not logged in");
+    }
+    let existing = await db.query.readingList.findFirst({
+        where: and(
+            eq(blogs.userId, user.id),
+            eq(blogs.id, blogId),
+        ),
+    });
+    return existing ? true : false;
 }

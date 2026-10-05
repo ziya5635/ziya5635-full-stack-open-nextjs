@@ -18,6 +18,12 @@ export class UnauthenticatedError extends DomainError {
     }
 }
 
+export class NotFoundError extends DomainError {
+    constructor(message = "Not found") {
+        super(message);
+    }
+}
+
 export class UsernameTakenError extends DomainError {
     constructor(message = "Username is already taken") {
         super(message);

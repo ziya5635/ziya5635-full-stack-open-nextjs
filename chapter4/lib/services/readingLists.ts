@@ -1,8 +1,26 @@
 import { readingList } from "@/db/schema";
-import { UnauthenticatedError } from "@/lib/exceptions";
+import { NotFoundError, UnauthenticatedError } from "@/lib/exceptions";
 import { getCurrentUser } from "./session";
 import { db } from "@/db";
 import { and, desc, eq } from "drizzle-orm";
+
+export async function makeAsRead(blogId: number) {
+    let user = await getCurrentUser();
+    if (!user) {
+        throw new UnauthenticatedError("Not logged in");
+    }
+    let [updated] = await db
+        .update(readingList)
+        .set({ read: true })
+        .where(and(eq(readingList.userId, user.id), eq(readingList.blogId, blogId)))
+        .returning()
+    console.log(updated)
+
+    if (!updated) {
+        throw new NotFoundError("Blog is not in your reading list");
+    }
+    return updated;
+}
 
 export async function getReadAndUnread() {
     let user = await getCurrentUser();
@@ -25,7 +43,7 @@ export async function getReadAndUnread() {
     return { read, unread };
 }
 
-export async function isOwnedByUser(blogId: number) {
+export async function isInUserList(blogId: number) {
     let user = await getCurrentUser()
     if (!user) {
         throw new UnauthenticatedError("Not logged in");

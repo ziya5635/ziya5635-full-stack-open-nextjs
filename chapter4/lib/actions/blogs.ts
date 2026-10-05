@@ -1,8 +1,8 @@
 'use server'
 import { revalidatePath } from "next/cache";
-import { addBlog, findBlogById, getBlogs, likeBlog } from "@/lib/services/blogs";
+import { addBlog, findBlogById, getBlogs, isOwnedByUser, likeBlog } from "@/lib/services/blogs";
 import { redirect } from "next/navigation";
-import { ActionError, UnauthenticatedError } from "@/lib/exceptions";
+import { ActionError, NotFoundError, UnauthenticatedError } from "@/lib/exceptions";
 import { getCurrentUser } from "@/lib/services/session";
 
 export async function createBlog(prevState: { error?: string, success?: boolean, title?: string, author?: string, url?: string }, data: FormData) {
@@ -73,17 +73,14 @@ export async function getBlogById(id: number) {
 export async function likeIt(prevState: { success: boolean; error: string }, data: FormData) {
     try {
         const id = data.get('id') as string
-        let blog = await likeBlog(+id)
-        if (!blog) {
-            return { success: false, error: "Blog not found" };
-        }
+        await likeBlog(+id)
         revalidatePath('/blogs')
         return { success: true, error: "" };
     } catch (error) {
-        console.log(error)
-        if (error instanceof ActionError) {
+        if (error instanceof ActionError || error instanceof NotFoundError) {
             return { success: false, error: error.message };
         }
+        console.log(error)
         return { success: false, error: "Failed to like blog" };
     }
 }
@@ -91,4 +88,17 @@ export async function likeIt(prevState: { success: boolean; error: string }, dat
 export async function searchByTitle(data: FormData) {
     const title = data.get('title') as string
     redirect(`/blogs?title=${title}`)
+}
+
+export async function isOwnedByUserAction(blogId: number) {
+    try {
+        const isOwned = await isOwnedByUser(blogId);
+        return { success: true, isOwned, error: "" }
+    } catch (error) {
+        if (error instanceof UnauthenticatedError) {
+            return { success: true, isOwned: false, error: "" };
+        }
+        console.log(error)
+        return { success: false, error: "Failed to find if the user owns the blog" };
+    }
 }

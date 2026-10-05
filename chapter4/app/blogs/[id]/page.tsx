@@ -1,14 +1,15 @@
-import { getBlogById } from "@/lib/actions/blogs";
+import { getBlogById, isOwnedByUserAction } from "@/lib/actions/blogs";
 import { notFound } from "next/navigation";
 import { LikeItForm } from "./likeForm";
 import { AddToReadingListForm } from "./addToReadingListForm";
-import { isOwnedByUserAction } from "@/lib/actions/readingLists";
 import ErrorBox from "@/components/errorBox";
+import { isInUserListAction } from "@/lib/actions/readingLists";
 
 async function BlogPage({ params }: { params: Promise<{ id: string }> }) {
   let { id } = await params;
   let blogResult = await getBlogById(+id);
   let ownedResult = await isOwnedByUserAction(+id);
+  let userListResult = await isInUserListAction(+id);
 
   if (!blogResult.success) {
     return <ErrorBox text={blogResult.error} />;
@@ -17,8 +18,13 @@ async function BlogPage({ params }: { params: Promise<{ id: string }> }) {
     return <ErrorBox text={ownedResult.error} />;
   }
 
+  if (!userListResult.success) {
+    return <ErrorBox text={userListResult.error} />;
+  }
+
   let { blog } = blogResult;
   let { isOwned } = ownedResult;
+  let { isInReadingList } = userListResult;
 
   if (!blog) {
     notFound();
@@ -63,7 +69,7 @@ async function BlogPage({ params }: { params: Promise<{ id: string }> }) {
         <footer className="mt-8 border-t border-gray-100 pt-6">
           <div className="flex items-center gap-3">
             <LikeItForm id={id} />
-            {!isOwned && <AddToReadingListForm id={id} />}
+            {!isInReadingList && !isOwned && <AddToReadingListForm id={id} />}
           </div>
         </footer>
       </article>
