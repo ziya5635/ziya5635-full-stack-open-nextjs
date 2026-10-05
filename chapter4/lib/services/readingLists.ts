@@ -2,7 +2,28 @@ import { readingList } from "@/db/schema";
 import { UnauthenticatedError } from "@/lib/exceptions";
 import { getCurrentUser } from "./session";
 import { db } from "@/db";
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
+
+export async function getReadAndUnread() {
+    let user = await getCurrentUser();
+    if (!user) {
+        throw new UnauthenticatedError("Not logged in");
+    }
+    let [read, unread] = await Promise.all([
+        db.query.readingList.findMany({
+            where: and(eq(readingList.userId, user.id), eq(readingList.read, true)),
+            orderBy: [desc(readingList.id)],
+            with: { blog: true },
+        }),
+        db.query.readingList.findMany({
+            where: and(eq(readingList.userId, user.id), eq(readingList.read, false)),
+            orderBy: [desc(readingList.id)],
+            with: { blog: true },
+        }),
+    ]);
+
+    return { read, unread };
+}
 
 export async function isOwnedByUser(blogId: number) {
     let user = await getCurrentUser()

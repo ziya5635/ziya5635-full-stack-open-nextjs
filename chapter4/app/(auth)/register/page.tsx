@@ -31,7 +31,7 @@ export default function RegisterPage() {
     if (state.error) {
       showNotification(state.error, "error");
     }
-  }, [state.error, showNotification]);
+  }, [state, showNotification]);
 
   const inputClasses =
     "w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-400 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 disabled:cursor-not-allowed disabled:opacity-60";
@@ -107,13 +107,6 @@ export default function RegisterPage() {
               />
             </label>
           </div>
-
-          {/* {state.error && (
-            <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-              {state.error}
-            </div>
-          )} */}
-
           <Button type="submit" disabled={pending} className="w-full">
             {pending ? "Registering..." : "Register"}
           </Button>

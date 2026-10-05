@@ -106,12 +106,6 @@ function NewBlog() {
               </label>
             </div>
 
-            {/* {state.error && (
-              <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                {state.error}
-              </div>
-            )} */}
-
             <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end">
               <Button
                 type="button"
