@@ -1,3 +1,4 @@
+import ErrorBox from "@/components/errorBox";
 import { fetchAllUsers } from "@/lib/actions/users";
 import Link from "next/link";
 
@@ -5,14 +6,7 @@ async function Users() {
   let { users, success, error } = await fetchAllUsers();
 
   if (!success) {
-    return (
-      <div className="flex flex-1 items-center justify-center">
-        <div className="rounded-lg border border-red-200 bg-red-50 px-6 py-4 text-red-700 shadow-sm">
-          <p className="font-medium">Error</p>
-          <p className="text-sm">{error}</p>
-        </div>
-      </div>
-    );
+    return <ErrorBox text={error} />;
   }
 
   return (

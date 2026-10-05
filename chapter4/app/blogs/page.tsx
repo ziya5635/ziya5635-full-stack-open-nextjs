@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { fetchAllBlogs, searchByTitle } from "@/lib/actions/blogs";
 import Button from "@/components/button";
+import ErrorBox from "@/components/errorBox";
 
 async function Blogs({
   searchParams,
@@ -11,14 +12,7 @@ async function Blogs({
   let { blogs, success, error } = await fetchAllBlogs(title);
 
   if (!success) {
-    return (
-      <div className="flex flex-1 items-center justify-center">
-        <div className="rounded-lg border border-red-200 bg-red-50 px-6 py-4 text-red-700 shadow-sm">
-          <p className="font-medium">Error</p>
-          <p className="text-sm">{error}</p>
-        </div>
-      </div>
-    );
+    return <ErrorBox text={error} />;
   }
 
   return (

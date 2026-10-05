@@ -6,16 +6,16 @@ import { generateUserToken } from "@/lib/actions/users";
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 
-const initialState = { error: "", token: "" };
+let initialState = { error: "", token: "" };
 
 export function GenerateTokenForm({ hasToken }: { hasToken: boolean }) {
-  const [state, formAction, isPending] = useActionState(
+  let [state, formAction, isPending] = useActionState(
     generateUserToken,
     initialState,
   );
-  const router = useRouter();
-  const { showNotification } = useNotification();
-  const [copied, setCopied] = useState(false);
+  let router = useRouter();
+  let { showNotification } = useNotification();
+  let [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (state.error) showNotification(state.error, "error");
@@ -27,7 +27,7 @@ export function GenerateTokenForm({ hasToken }: { hasToken: boolean }) {
     if (state.token) router.refresh();
   }, [state.token, router]);
 
-  const handleCopy = async () => {
+  async function handleCopy() {
     if (!state.token) return;
     try {
       await navigator.clipboard.writeText(state.token);
@@ -37,7 +37,7 @@ export function GenerateTokenForm({ hasToken }: { hasToken: boolean }) {
     } catch {
       showNotification("Failed to copy token", "error");
     }
-  };
+  }
 
   return (
     <>
@@ -85,42 +85,3 @@ export function GenerateTokenForm({ hasToken }: { hasToken: boolean }) {
     </>
   );
 }
-
-// "use client";
-
-// import Button from "@/components/button";
-// import { useNotification } from "@/components/providers/notificationProvider";
-// import { generateUserToken } from "@/lib/actions/users";
-// import { useRouter } from "next/navigation";
-// import { useActionState, useEffect } from "react";
-
-// const initialState = { error: "", token: "" };
-
-// export function GenerateTokenForm() {
-//   let [state, formAction, isPending] = useActionState(
-//     generateUserToken,
-//     initialState,
-//   );
-//   let router = useRouter();
-//   let { showNotification } = useNotification();
-
-//   useEffect(() => {
-//     if (state?.error) {
-//       showNotification(state.error, "error");
-//     }
-//   }, [state, showNotification]);
-
-//   useEffect(() => {
-//     if (state.token) {
-//       router.refresh(); //re-fetches the current force-dynamic route
-//     }
-//   }, [state.token, router]);
-
-//   return (
-//     <form action={formAction} className="space-y-4">
-//       <Button type="submit" disabled={isPending}>
-//         {isPending ? "Generating..." : "Generate Token"}
-//       </Button>
-//     </form>
-//   );
-// }

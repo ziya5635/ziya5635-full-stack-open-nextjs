@@ -1,7 +1,23 @@
 "use server"
 
-import { addToReadingList, isOwnedByUser } from "@/lib/services/readingLists";
+import { addToReadingList, getReadAndUnread, isOwnedByUser } from "@/lib/services/readingLists";
 import { UnauthenticatedError } from "@/lib/exceptions";
+
+export async function getReadAndUnreadAction() {
+    try {
+        let { read, unread } = await getReadAndUnread();
+        return { success: true, read, unread, error: "" }
+
+    } catch (error) {
+        if (error instanceof UnauthenticatedError) {
+            return { success: false, error: "Not logged in" };
+        }
+        console.log(error)
+        return {
+            success: false, error: "Failed to fetch user reading list "
+        }
+    }
+}
 
 export async function isOwnedByUserAction(blogId: number) {
     try {
