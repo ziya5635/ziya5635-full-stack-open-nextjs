@@ -3,8 +3,6 @@
 import { useActionState, useEffect } from "react";
 import { registerUser } from "@/lib/actions/users";
 import Button from "@/components/button";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { useNotification } from "@/components/providers/notificationProvider";
 
 let initialState = {
@@ -16,16 +14,17 @@ let initialState = {
 };
 
 export default function RegisterPage() {
-  let { status } = useSession();
-  let router = useRouter();
+  // let { status } = useSession();
+  // let router = useRouter();
   let [state, formAction, pending] = useActionState(registerUser, initialState);
   let { showNotification } = useNotification();
 
-  useEffect(() => {
-    if (status === "authenticated") {
-      router.replace("/blogs/new");
-    }
-  }, [status, router]);
+  //Redirecting is handled by middleware (proxy.ts) currently
+  // useEffect(() => {
+  //   if (status === "authenticated") {
+  //     router.replace("/blogs/new");
+  //   }
+  // }, [status, router]);
 
   useEffect(() => {
     if (state.error) {
